@@ -1149,6 +1149,14 @@
         loadSupporterPhotos();
         updateTeamTheme();
         
+        // Sync supporter updates across tabs and windows
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'ipl2026Supporters') {
+                loadSupporterPhotos();
+                displaySupporters();
+            }
+        });
+
         // Auto-refresh supporters wall every second
         setInterval(() => {
             loadSupporterPhotos();

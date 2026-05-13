@@ -790,6 +790,13 @@
         function setupAutoRefresh() {
             setInterval(renderUI, 2000);
         }
+
+        // Sync supporter approval updates across tabs and windows
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'ipl2026Supporters' && isAdminAuthenticated) {
+                renderUI();
+            }
+        });
     </script>
 </body>
 </html>
