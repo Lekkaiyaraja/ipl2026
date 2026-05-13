@@ -598,6 +598,12 @@
             cursor: pointer;
         }
 
+        .supporter-avatar.pending {
+            opacity: 0.6;
+            border-color: #ffc107;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
+        }
+
         .supporter-avatar:hover {
             transform: scale(1.15);
             box-shadow: 0 0 25px var(--theme-glow);
@@ -901,21 +907,37 @@
             localStorage.setItem('ipl2026Supporters', JSON.stringify(supporterPhotos));
         }
 
+        // Save current uploaded photo preview to localStorage
+        function saveCurrentUserPhoto() {
+            if (currentUserPhoto) {
+                localStorage.setItem('ipl2026CurrentUserPhoto', currentUserPhoto);
+            }
+        }
+
+        // Load current uploaded photo preview from localStorage
+        function loadCurrentUserPhoto() {
+            const saved = localStorage.getItem('ipl2026CurrentUserPhoto');
+            if (saved) {
+                currentUserPhoto = saved;
+                const preview = document.getElementById('photoPreview');
+                preview.innerHTML = '';
+                preview.style.backgroundImage = `url('${currentUserPhoto}')`;
+                preview.classList.add('has-image');
+            }
+        }
+
         // Display supporters in the wall
         function displaySupporters() {
             const wall = document.getElementById('supportersWall');
-            
-            // Filter only approved supporters
-            const approvedSupporters = supporterPhotos.filter(photo => photo.status === 'approved');
-            
-            // Only clear and rebuild if we have approved supporters
-            if (approvedSupporters.length > 0) {
+            const visibleSupporters = supporterPhotos.filter(photo => photo.status === 'approved' || photo.status === 'pending');
+
+            if (visibleSupporters.length > 0) {
                 wall.innerHTML = '';
-                approvedSupporters.forEach((photoData) => {
+                visibleSupporters.forEach((photoData) => {
                     const avatar = document.createElement('div');
-                    avatar.className = 'supporter-avatar';
+                    avatar.className = `supporter-avatar ${photoData.status === 'pending' ? 'pending' : ''}`.trim();
                     avatar.style.backgroundImage = `url('${photoData.img}')`;
-                    avatar.title = `${photoData.player} (${photoData.team})`;
+                    avatar.title = `${photoData.player} (${photoData.team}) - ${photoData.status === 'pending' ? 'Pending approval' : 'Approved'}`;
                     wall.appendChild(avatar);
                 });
             } else {
@@ -926,11 +948,16 @@
         // Handle photo file input
         document.getElementById('photoInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
+            const isImageFile = file && (
+                file.type ? file.type.startsWith('image/') : /\.(jpe?g|png|gif|webp|bmp|heic)$/i.test(file.name)
+            );
+
+            if (isImageFile) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    currentUserPhoto = e.target.result;
-                    
+                    currentUserPhoto = e.target.result || reader.result;
+                    saveCurrentUserPhoto();
+
                     // Show preview
                     const preview = document.getElementById('photoPreview');
                     preview.innerHTML = '';
@@ -1034,7 +1061,7 @@
             
             setTimeout(() => {
                 floatingAvatar.remove();
-            }, 1200);
+            }, 4000);
         }
 
         // Create confetti
@@ -1118,6 +1145,7 @@
 
         // Initialize
         loadVotes();
+        loadCurrentUserPhoto();
         loadSupporterPhotos();
         updateTeamTheme();
         
