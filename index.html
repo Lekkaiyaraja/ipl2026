@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TriGate IPL 2026 - Live Fan Vote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        :root {
+            --theme-color: #0d6efd;
+            --theme-color-dark: #0a51cc;
+            --theme-glow: rgba(13, 110, 253, 0.5);
+            --team-a-color: #e70909;
+            --team-b-color: #9d4edd;
+            --neutral-color: #7b7b7b;
+            --transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        /* Stadium background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, var(--theme-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+            transition: background 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--theme-color);
+            box-shadow: 0 4px 15px var(--theme-glow);
+            animation: slideDown 0.8s ease-out;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--theme-color), #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px var(--theme-glow);
+            font-weight: 800;
+            letter-spacing: 2px;
+            transition: var(--transition);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #00d4ff;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .admin-link {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 1.5em;
+            text-decoration: none;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(13, 110, 253, 0.2);
+            border: 2px solid var(--theme-color);
+        }
+
+        .admin-link:hover {
+            opacity: 1;
+            background: rgba(13, 110, 253, 0.4);
+            box-shadow: 0 0 15px var(--theme-glow);
+            transform: scale(1.1);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Vote Counter Section */
+        .vote-counter-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--theme-color);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--theme-glow);
+            animation: slideUp 0.8s ease-out 0.2s both;
+            transition: var(--transition);
+        }
+
+        .vote-title {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            color: var(--theme-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: var(--transition);
+        }
+
+        .vote-bars-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-end;
+            justify-content: center;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+
+        .team-vote {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .team-vote-label {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .team-a-label {
+            color: #ff6b35;
+        }
+
+        .team-b-label {
+            color: #ffd60a;
+        }
+
+        .vote-bar-background {
+            width: 80px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .vote-bar {
+            height: 0%;
+            width: 100%;
+            border-radius: 8px;
+            transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .team-a .vote-bar {
+            background: linear-gradient(to top,red, red);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+        }
+
+        .team-b .vote-bar {
+            background: linear-gradient(to top, Purple , Gold);
+            box-shadow: 0 0 20px rgba(255, 214, 10, 0.6);
+        }
+
+        .vote-count {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-top: 15px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .team-a .vote-count {
+            color: #ff6b35;
+            text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+        }
+
+        .team-b .vote-count {
+            color: #ffd60a;
+            text-shadow: 0 0 10px rgba(255, 214, 10, 0.5);
+        }
+
+        /* Teams Section */
+        .teams-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            animation: slideUp 0.8s ease-out 0.4s both;
+        }
+
+        .team {
+            text-align: center;
+        }
+
+        .team-name {
+            font-size: 2em;
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .team-a .team-name {
+            color: #ff6b35;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .team-b .team-name {
+            color: #ffd60a;
+            text-shadow: 0 0 20px rgba(255, 214, 10, 0.4);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .player-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(0);
+            position: relative;
+            min-height: 340px;
+            contain: paint;
+        }
+
+        .player-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            border-color: var(--theme-color);
+            box-shadow: 0 10px 30px var(--theme-glow);
+            transition: var(--transition);
+        }
+
+        .team-a .player-card:hover {
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4), 0 0 20px rgba(255, 107, 53, 0.3);
+            border-color: #ff6b35;
+        }
+
+        .team-b .player-card:hover {
+            box-shadow: 0 10px 30px rgba(255, 214, 10, 0.4), 0 0 20px rgba(255, 214, 10, 0.3);
+            border-color: #ffd60a;
+        }
+
+        .player-card.clicked {
+            animation: pulse 0.6s ease;
+        }
+
+        .player-card .player-image-wrap {
+            width: 100%;
+            max-height: 250px;
+            min-height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .player-card .player-image-wrap img,
+        .player-card .player-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .player-info {
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        }
+
+        .player-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .player-votes {
+            font-size: 0.9em;
+            color: #00d4ff;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* Popup Notification */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #0d6efd;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            z-index: 1000;
+            min-width: 300px;
+            box-shadow: 0 0 50px rgba(13, 110, 253, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .popup-message {
+            font-size: 1.5em;
+            color: #00d4ff;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .popup-emoji {
+            font-size: 3em;
+            margin: 20px 0;
+            animation: bounce 0.8s ease-in-out infinite;
+        }
+
+        @keyframes popupShow {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes popupHide {
+            to {
+                transform: translate(-50%, -50%) scale(0);
+            }
+        }
+
+        /* Floating Player Animation */
+        .floating-player {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            z-index: 999;
+            background-size: cover;
+            animation: float-up 1.2s ease-out forwards;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) scale(0.5);
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 998;
+            animation: confetti-fall 2s ease-in forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(300px) translateX(var(--tx)) rotateZ(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(13, 110, 253, 0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Photo Upload Section */
+        .photo-upload-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--theme-color);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--theme-glow);
+            animation: slideUp 0.8s ease-out both;
+            transition: var(--transition);
+        }
+
+        .upload-title {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: var(--theme-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: var(--transition);
+        }
+
+        .upload-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--theme-color), #00d4ff);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--theme-glow);
+        }
+
+        .file-input-label:active {
+            transform: translateY(0);
+        }
+
+        .upload-icon {
+            font-size: 1.3em;
+        }
+
+        .upload-text {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .photo-preview-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .photo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px dashed var(--theme-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            transition: all 0.3s ease;
+        }
+
+        .photo-preview.has-image {
+            border-style: solid;
+            box-shadow: 0 0 20px var(--theme-glow);
+        }
+
+        .preview-placeholder {
+            font-size: 0.85em;
+            color: var(--theme-color);
+            text-align: center;
+            padding: 10px;
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+        /* Supporters Wall Section */
+        .supporters-wall-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--theme-color);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--theme-glow);
+            animation: slideUp 0.8s ease-out 0.1s both;
+            transition: var(--transition);
+        }
+
+        .wall-title {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            color: var(--theme-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: var(--transition);
+        }
+
+        .supporters-wall {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+        }
+
+        .supporter-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid var(--theme-color);
+            box-shadow: 0 0 15px var(--theme-glow);
+            animation: avatarSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .supporter-avatar:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 25px var(--theme-glow);
+        }
+
+        .wall-placeholder {
+            color: var(--theme-color);
+            font-size: 1.1em;
+            opacity: 0.6;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        /* Floating Supporter Avatar */
+        .floating-avatar {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            z-index: 999;
+            background-size: cover;
+            background-position: center;
+            border: 3px solid var(--theme-color);
+            box-shadow: 0 0 15px var(--theme-glow);
+            animation: float-avatar-up 1.2s ease-out forwards;
+        }
+
+        /* Avatar Animations */
+        @keyframes avatarSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float-avatar-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) scale(0.5);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .admin-link {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+
+            .teams-section {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .vote-bars-container {
+                flex-direction: column;
+                gap: 20px;
+                height: auto;
+            }
+
+            .team-vote {
+                flex-direction: row;
+                gap: 15px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .vote-count {
+                margin-top: 0;
+                margin-left: 10px;
+            }
+
+            .vote-bar-background {
+                height: 80px;
+            }
+
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .player-card .player-image-wrap {
+                height: 200px;
+            }
+
+            header {
+                padding: 20px 15px;
+            }
+
+            .vote-counter-section {
+                padding: 20px;
+            }
+
+            .popup {
+                min-width: 250px;
+                padding: 30px 20px;
+            }
+
+            .photo-upload-section {
+                padding: 20px;
+            }
+
+            .upload-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .supporters-wall {
+                gap: 12px;
+            }
+
+            .supporter-avatar {
+                width: 70px;
+                height: 70px;
+            }
+
+            .floating-avatar {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TriGate IPL 2026</h1>
+        <h1 style="font-size: 1.8em;">Live Fan Vote</h1>
+        <p class="subtitle">Click to support your favorite player</p>
+        <a href="admin.html" class="admin-link" title="Admin Panel">⚙️</a>
+    </header>
+
+    <div class="container">
+        <!-- Photo Upload Section -->
+        <div class="photo-upload-section">
+            <div class="upload-title">📸 Upload Your Photo to Show as a Supporter (Optional)</div>
+            <div class="upload-container">
+                <div class="file-input-wrapper">
+                    <input type="file" id="photoInput" accept="image/*" class="file-input">
+                    <label for="photoInput" class="file-input-label">
+                        <span class="upload-icon">📷</span>
+                        <span class="upload-text">Choose Photo</span>
+                    </label>
+                </div>
+                <div class="photo-preview-wrapper">
+                    <div class="photo-preview" id="photoPreview">
+                        <span class="preview-placeholder">No photo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vote Counter Section -->
+        <div class="vote-counter-section">
+            <div class="vote-title">⚡ LIVE VOTE COUNT ⚡</div>
+            <div class="vote-bars-container">
+                <div class="team-vote team-a">
+                    <div class="team-a-label">RCB</div>
+                    <div class="vote-bar-background">
+                        <div class="vote-bar"></div>
+                    </div>
+                    <div class="vote-count" id="teamACount">0</div>
+                </div>
+                <div class="team-vote team-b">
+                    <div class="team-b-label">KKR</div>
+                    <div class="vote-bar-background">
+                        <div class="vote-bar"></div>
+                    </div>
+                    <div class="vote-count" id="teamBCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teams Section -->
+        <div class="teams-section">
+            <!-- Team A -->
+            <div class="team team-a">
+                <div class="team-name">🔥 RCB 🔥</div>
+                <div class="players-grid">
+                    <div class="player-card" data-team="a" data-player="1">
+                        <div class="player-image-wrap">
+                            <img src="images/virat.jpg" alt="Virat Kohli" class="player-image">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">Virat Kohli</div>
+                            <div class="player-votes">Votes: <span id="playerA1Votes">0</span></div>
+                        </div>
+                    </div>
+                    <div class="player-card" data-team="a" data-player="2">
+                        <div class="player-image-wrap">
+                            <img src="images/hazeelhood.jpg" alt="Josh Hazlewood" class="player-image">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">Josh Hazlewood</div>
+                            <div class="player-votes">Votes: <span id="playerA2Votes">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team B -->
+            <div class="team team-b">
+                <div class="team-name">⭐ KKR ⭐</div>
+                <div class="players-grid">
+                    <div class="player-card" data-team="b" data-player="1">
+                        <div class="player-image-wrap">
+                            <img src="images/fin.jpg" alt="Finn Alle" class="player-image">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">Finn Alle</div>
+                            <div class="player-votes">Votes: <span id="playerB1Votes">0</span></div>
+                        </div>
+                    </div>
+                    <div class="player-card" data-team="b" data-player="2">
+                        <div class="player-image-wrap">
+                            <img src="images/sunil.jpg" alt="Sunil Narine" class="player-image">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">Sunil Narine</div>
+                            <div class="player-votes">Votes: <span id="playerB2Votes">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Supporters Wall -->
+        <div class="supporters-wall-section">
+            <div class="wall-title">❤️ LIVE SUPPORTERS WALL ❤️</div>
+            <div class="supporters-wall" id="supportersWall">
+                <div class="wall-placeholder">Supporters will appear here...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Notification -->
+    <div class="popup" id="popup">
+        <div class="popup-message" id="popupMessage">Congratulations!</div>
+        <div class="popup-emoji">🎉</div>
+    </div>
+
+    <script>
+        // Vote storage
+        const voteData = {
+            teamA: 0,
+            teamB: 0,
+            playerA1: 0,
+            playerA2: 0,
+            playerB1: 0,
+            playerB2: 0
+        };
+
+        // Current user's uploaded photo
+        let currentUserPhoto = null;
+
+        // Supporter photos storage with approval system
+        let supporterPhotos = [];
+
+        // Load votes from localStorage
+        function loadVotes() {
+            const savedVotes = localStorage.getItem('ipl2026Votes');
+            if (savedVotes) {
+                Object.assign(voteData, JSON.parse(savedVotes));
+                updateUI();
+            }
+        }
+
+        // Save votes to localStorage
+        function saveVotes() {
+            localStorage.setItem('ipl2026Votes', JSON.stringify(voteData));
+        }
+
+        // Load supporter photos from localStorage
+        function loadSupporterPhotos() {
+            const saved = localStorage.getItem('ipl2026Supporters');
+            if (saved) {
+                supporterPhotos = JSON.parse(saved);
+                displaySupporters();
+            }
+        }
+
+        // Save supporter photos to localStorage
+        function saveSupporterPhotos() {
+            localStorage.setItem('ipl2026Supporters', JSON.stringify(supporterPhotos));
+        }
+
+        // Display supporters in the wall
+        function displaySupporters() {
+            const wall = document.getElementById('supportersWall');
+            
+            // Filter only approved supporters
+            const approvedSupporters = supporterPhotos.filter(photo => photo.status === 'approved');
+            
+            // Only clear and rebuild if we have approved supporters
+            if (approvedSupporters.length > 0) {
+                wall.innerHTML = '';
+                approvedSupporters.forEach((photoData) => {
+                    const avatar = document.createElement('div');
+                    avatar.className = 'supporter-avatar';
+                    avatar.style.backgroundImage = `url('${photoData.img}')`;
+                    avatar.title = `${photoData.player} (${photoData.team})`;
+                    wall.appendChild(avatar);
+                });
+            } else {
+                wall.innerHTML = '<div class="wall-placeholder">Supporters will appear here...</div>';
+            }
+        }
+
+        // Handle photo file input
+        document.getElementById('photoInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentUserPhoto = e.target.result;
+                    
+                    // Show preview
+                    const preview = document.getElementById('photoPreview');
+                    preview.innerHTML = '';
+                    preview.style.backgroundImage = `url('${currentUserPhoto}')`;
+                    preview.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Update theme based on leading team
+        function updateTeamTheme() {
+            const root = document.documentElement;
+            
+            if (voteData.teamA > voteData.teamB) {
+                // Team A leads - Orange theme
+                root.style.setProperty('--theme-color', '#ff6b35');
+                root.style.setProperty('--theme-color-dark', '#e55a24');
+                root.style.setProperty('--theme-glow', 'rgba(255, 107, 53, 0.5)');
+            } else if (voteData.teamB > voteData.teamA) {
+                // Team B leads - Purple theme
+                root.style.setProperty('--theme-color', '#9d4edd');
+                root.style.setProperty('--theme-color-dark', '#7b2cbf');
+                root.style.setProperty('--theme-glow', 'rgba(157, 78, 221, 0.5)');
+            } else {
+                // Equal votes - Neutral gray
+                root.style.setProperty('--theme-color', '#7b7b7b');
+                root.style.setProperty('--theme-color-dark', '#606060');
+                root.style.setProperty('--theme-glow', 'rgba(123, 123, 123, 0.5)');
+            }
+        }
+
+        // Update all UI elements
+        function updateUI() {
+            document.getElementById('teamACount').textContent = voteData.teamA;
+            document.getElementById('teamBCount').textContent = voteData.teamB;
+            document.getElementById('playerA1Votes').textContent = voteData.playerA1;
+            document.getElementById('playerA2Votes').textContent = voteData.playerA2;
+            document.getElementById('playerB1Votes').textContent = voteData.playerB1;
+            document.getElementById('playerB2Votes').textContent = voteData.playerB2;
+            
+            updateVoteBars();
+            updateTeamTheme();
+        }
+
+        // Update vote bar heights
+        function updateVoteBars() {
+            const totalVotes = voteData.teamA + voteData.teamB;
+            const teamAPercentage = totalVotes === 0 ? 0 : (voteData.teamA / totalVotes) * 100;
+            const teamBPercentage = totalVotes === 0 ? 0 : (voteData.teamB / totalVotes) * 100;
+
+            document.querySelector('.team-a .vote-bar').style.height = teamAPercentage + '%';
+            document.querySelector('.team-b .vote-bar').style.height = teamBPercentage + '%';
+        }
+
+        // Show popup notification
+        function showPopup(playerName) {
+            const popup = document.getElementById('popup');
+            document.getElementById('popupMessage').textContent = 
+                `Congratulations! You supported ${playerName} 🏏`;
+            
+            popup.style.animation = 'popupShow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+            
+            setTimeout(() => {
+                popup.style.animation = 'popupHide 0.5s ease forwards';
+            }, 2000);
+        }
+
+        // Create floating player animation
+        function createFloatingPlayer(playerCard) {
+            const img = playerCard.querySelector('.player-image');
+            const rect = playerCard.getBoundingClientRect();
+            
+            const floatingPlayer = document.createElement('div');
+            floatingPlayer.className = 'floating-player';
+            floatingPlayer.style.backgroundImage = `url('${img.src}')`;
+            floatingPlayer.style.left = rect.left + 'px';
+            floatingPlayer.style.top = rect.top + 'px';
+            
+            document.body.appendChild(floatingPlayer);
+            
+            setTimeout(() => {
+                floatingPlayer.remove();
+            }, 1200);
+        }
+
+        // Create floating avatar animation
+        function createFloatingAvatar(photoData) {
+            if (!photoData) return;
+            
+            const wall = document.getElementById('supportersWall');
+            const wallRect = wall.getBoundingClientRect();
+            
+            const floatingAvatar = document.createElement('div');
+            floatingAvatar.className = 'floating-avatar';
+            floatingAvatar.style.backgroundImage = `url('${photoData}')`;
+            floatingAvatar.style.left = window.innerWidth / 2 + 'px';
+            floatingAvatar.style.top = window.innerHeight / 2 + 'px';
+            
+            document.body.appendChild(floatingAvatar);
+            
+            setTimeout(() => {
+                floatingAvatar.remove();
+            }, 1200);
+        }
+
+        // Create confetti
+        function createConfetti() {
+            const colors = ['#ff6b35', '#ffd60a', '#0d6efd', '#00d4ff'];
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = window.innerWidth / 2 + 'px';
+                confetti.style.top = window.innerHeight / 2 + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 2000);
+            }
+        }
+
+        // Get player name from card
+        function getPlayerName(playerCard) {
+            return playerCard.querySelector('.player-name').textContent;
+        }
+
+        // Handle player card click
+        function handlePlayerClick(event) {
+            const card = event.currentTarget;
+            const team = card.getAttribute('data-team');
+            const player = card.getAttribute('data-player');
+            const playerName = getPlayerName(card);
+
+            // Update vote counts
+            if (team === 'a') {
+                voteData.teamA++;
+                voteData[`playerA${player}`]++;
+            } else {
+                voteData.teamB++;
+                voteData[`playerB${player}`]++;
+            }
+
+            // Add supporter photo if available
+            if (currentUserPhoto) {
+                const teamName = team === 'a' ? 'RCB' : 'KKR';
+                const photoEntry = {
+                    img: currentUserPhoto,
+                    team: teamName,
+                    player: playerName,
+                    status: 'pending'
+                };
+                supporterPhotos.push(photoEntry);
+                saveSupporterPhotos();
+                displaySupporters();
+                createFloatingAvatar(currentUserPhoto);
+            }
+
+            // Save and update
+            saveVotes();
+            updateUI();
+
+            // Animations
+            card.classList.add('clicked');
+            setTimeout(() => {
+                card.classList.remove('clicked');
+            }, 600);
+
+            createFloatingPlayer(card);
+            createConfetti();
+            showPopup(playerName);
+
+            // Play sound effect (optional - can be uncommented)
+            // playSound();
+        }
+
+        // Attach click handlers to player cards
+        document.querySelectorAll('.player-card').forEach(card => {
+            card.addEventListener('click', handlePlayerClick);
+        });
+
+        // Initialize
+        loadVotes();
+        loadSupporterPhotos();
+        updateTeamTheme();
+        
+        // Auto-refresh supporters wall every second
+        setInterval(() => {
+            loadSupporterPhotos();
+            displaySupporters();
+        }, 1000);
+    </script>
+</body>
+</html>
